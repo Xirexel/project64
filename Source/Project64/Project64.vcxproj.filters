@@ -234,6 +234,15 @@
     <ClCompile Include="UserInterface\Debugger\Debugger-ExceptionBreakpoints.cpp">
       <Filter>Source Files\User Interface Source\Debugger Source</Filter>
     </ClCompile>
+    <ClCompile Include="UserInterface\Settings\SettingsPage-DiskDrive.cpp">
+      <Filter>Source Files\User Interface Source\Settings Source</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\WTLControls\HexEditCtrl.cpp">
+      <Filter>Source Files\User Interface Source\WTL Controls Source</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface\Debugger\DebugMMU.cpp">
+      <Filter>Source Files\User Interface Source\Debugger Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UserInterface\resource.h">
@@ -449,6 +458,15 @@
     <ClInclude Include="UserInterface\Debugger\Debugger-ExceptionBreakpoints.h">
       <Filter>Header Files\User Interface Headers\Debugger Headers</Filter>
     </ClInclude>
+    <ClInclude Include="UserInterface\Settings\SettingsPage-DiskDrive.h">
+      <Filter>Header Files\User Interface Headers\Settings Header</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\WTLControls\HexEditCtrl.h">
+      <Filter>Header Files\User Interface Headers\WTL Controls Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface\Debugger\DebugMMU.h">
+      <Filter>Header Files\User Interface Headers\Debugger Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\divider.cur">
@@ -491,6 +509,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="UserInterface\Bitmaps\AboutScreenLogo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="UserInterface\Bitmaps\AboutScreenLogoHDPI.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

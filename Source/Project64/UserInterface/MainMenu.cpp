@@ -96,7 +96,29 @@ int CMainMenu::ProcessAccelerator(HWND hWnd, void * lpMsg)
 std::string CMainMenu::ChooseFileToOpen(HWND hParent)
 {
     CPath FileName;
-    const char * Filter = "N64 ROMs (*.zip, *.7z, *.?64, *.rom, *.usa, *.jap, *.pal, *.bin, *.ndd)\0*.?64;*.zip;*.7z;*.bin;*.rom;*.usa;*.jap;*.pal;*.ndd\0All files (*.*)\0*.*\0";
+    const char * Filter = "N64 ROMs & Disks (*.zip, *.7z, *.?64, *.rom, *.usa, *.jap, *.pal, *.bin, *.ndd, *.d64)\0*.?64;*.zip;*.7z;*.bin;*.rom;*.usa;*.jap;*.pal;*.ndd;*.d64\0All files (*.*)\0*.*\0";
+    if (FileName.SelectFile(hParent, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
+    {
+        return FileName;
+    }
+    return "";
+}
+
+std::string CMainMenu::ChooseROMFileToOpen(HWND hParent)
+{
+    CPath FileName;
+    const char * Filter = "N64 ROMs (*.zip, *.7z, *.?64, *.rom, *.usa, *.jap, *.pal, *.bin)\0*.?64;*.zip;*.7z;*.bin;*.rom;*.usa;*.jap;*.pal\0All files (*.*)\0*.*\0";
+    if (FileName.SelectFile(hParent, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
+    {
+        return FileName;
+    }
+    return "";
+}
+
+std::string CMainMenu::ChooseDiskFileToOpen(HWND hParent)
+{
+    CPath FileName;
+    const char * Filter = "N64DD Disk Image (*.ndd, *.d64)\0*.ndd;*.d64\0All files (*.*)\0*.*\0";
     if (FileName.SelectFile(hParent, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
     {
         return FileName;
@@ -117,26 +139,34 @@ void CMainMenu::OnOpenRom(HWND hWnd)
     {
         return;
     }
+    
     stdstr ext = CPath(File).GetExtension();
-    if (_stricmp(ext.c_str(), "ndd") != 0)
+    if ((_stricmp(ext.c_str(), "ndd") != 0) && (_stricmp(ext.c_str(), "d64") != 0))
     {
-        delete g_DDRom;
-        g_DDRom = NULL;
         g_BaseSystem->RunFileImage(File.c_str());
         return;
     }
-    // Open Disk
-    if (!CPath(g_Settings->LoadStringVal(File_DiskIPLPath)).Exists() || !g_BaseSystem->RunDiskImage(File.c_str()))
+    else
     {
-        if (!CPath(g_Settings->LoadStringVal(File_DiskIPLPath)).Exists()) { g_Notify->DisplayWarning(MSG_IPL_REQUIRED); }
-        CPath FileNameIPL;
-        const char * Filter = "64DD IPL ROM Image (*.zip, *.7z, *.?64, *.rom, *.usa, *.jap, *.pal, *.bin)\0*.?64;*.zip;*.7z;*.bin;*.rom;*.usa;*.jap;*.pal\0All files (*.*)\0*.*\0";
-        if (FileNameIPL.SelectFile(hWnd, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
-        {
-            g_Settings->SaveString(File_DiskIPLPath, (const char *)FileNameIPL);
-            g_BaseSystem->RunDiskImage(File.c_str());
-        }
+        g_BaseSystem->RunDiskImage(File.c_str());
     }
+}
+
+void CMainMenu::OnOpenCombo(HWND hWnd)
+{
+    std::string FileROM = ChooseROMFileToOpen(hWnd);
+    if (FileROM.length() == 0)
+    {
+        return;
+    }
+
+    std::string FileDisk = ChooseDiskFileToOpen(hWnd);
+    if (FileDisk.length() == 0)
+    {
+        return;
+    }
+
+    g_BaseSystem->RunDiskComboImage(FileROM.c_str(), FileDisk.c_str());
 }
 
 void CMainMenu::OnRomInfo(HWND hWnd)
@@ -254,6 +284,7 @@ bool CMainMenu::ProcessMessage(HWND hWnd, DWORD /*FromAccelerator*/, DWORD MenuI
     switch (MenuID)
     {
     case ID_FILE_OPEN_ROM: OnOpenRom(hWnd); break;
+    case ID_FILE_OPEN_COMBO: OnOpenCombo(hWnd); break;
     case ID_FILE_ROM_INFO: OnRomInfo(hWnd); break;
     case ID_FILE_STARTEMULATION:
         m_Gui->SaveWindowLoc();
@@ -302,12 +333,11 @@ bool CMainMenu::ProcessMessage(HWND hWnd, DWORD /*FromAccelerator*/, DWORD MenuI
         WriteTrace(TraceUserInterface, TraceDebug, "ID_SYSTEM_SWAPDISK");
         {
             // Open Disk
-            CPath FileName;
-            const char * Filter = "N64DD Disk Image (*.ndd)\0*.ndd\0All files (*.*)\0*.*\0";
-            if (FileName.SelectFile(hWnd, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
+            stdstr FileName = ChooseDiskFileToOpen(hWnd);
+            if (FileName.length() != 0)
             {
                 g_Disk->SaveDiskImage();
-                g_Disk->SwapDiskImage(FileName);
+                g_Disk->SwapDiskImage(FileName.c_str());
             }
         }
         break;
@@ -547,22 +577,10 @@ bool CMainMenu::ProcessMessage(HWND hWnd, DWORD /*FromAccelerator*/, DWORD MenuI
             if (UISettingsLoadStringIndex(File_RecentGameFileIndex, MenuID - ID_RECENT_ROM_START, FileName) &&
                 FileName.length() > 0)
             {
-                if (CPath(FileName).GetExtension() != "ndd")
+                if ((CPath(FileName).GetExtension() != "ndd") && (CPath(FileName).GetExtension() != "d64"))
                     g_BaseSystem->RunFileImage(FileName.c_str());
                 else
-                {
-                    if (!CPath(g_Settings->LoadStringVal(File_DiskIPLPath)).Exists() || !g_BaseSystem->RunDiskImage(FileName.c_str()))
-                    {
-                        if (!CPath(g_Settings->LoadStringVal(File_DiskIPLPath)).Exists()) { g_Notify->DisplayWarning(MSG_IPL_REQUIRED); }
-                        CPath FileNameIPL;
-                        const char * Filter = "64DD IPL ROM Image (*.zip, *.7z, *.?64, *.rom, *.usa, *.jap, *.pal, *.bin)\0*.?64;*.zip;*.7z;*.bin;*.rom;*.usa;*.jap;*.pal\0All files (*.*)\0*.*\0";
-                        if (FileNameIPL.SelectFile(hWnd, g_Settings->LoadStringVal(RomList_GameDir).c_str(), Filter, true))
-                        {
-                            g_Settings->SaveString(File_DiskIPLPath, (const char *)FileNameIPL);
-                            g_BaseSystem->RunDiskImage(FileName.c_str());
-                        }
-                    }
-                }
+                    g_BaseSystem->RunDiskImage(FileName.c_str());
             }
         }
         if (MenuID >= ID_RECENT_DIR_START && MenuID < ID_RECENT_DIR_END)
@@ -772,6 +790,8 @@ void CMainMenu::FillOutMenu(HMENU hMenu)
     ****************/
     MenuItemList FileMenu;
     Item.Reset(ID_FILE_OPEN_ROM, MENU_OPEN, m_ShortCuts.ShortCutString(ID_FILE_OPEN_ROM, RunningState));
+    FileMenu.push_back(Item);
+    Item.Reset(ID_FILE_OPEN_COMBO, MENU_OPEN_COMBO, m_ShortCuts.ShortCutString(ID_FILE_OPEN_COMBO, RunningState));
     FileMenu.push_back(Item);
     if (!inBasicMode)
     {
@@ -1028,13 +1048,17 @@ void CMainMenu::FillOutMenu(HMENU hMenu)
         *******************/
 
         //ID_DEBUGGER_LOGOPTIONS
-        Item.Reset(ID_DEBUGGER_BREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"R4300i &Commands...");
-        Item.SetItemEnabled(CPURunning);
-
+        Item.Reset(ID_DEBUGGER_BREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"&Commands...");
         DebugR4300Menu.push_back(Item);
-        //Item.Reset(ID_DEBUGGER_R4300REGISTERS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"R4300i &Registers...");
-        //Item.SetItemEnabled(true);
-       // DebugR4300Menu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_CPULOG, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Command Log...");
+        DebugR4300Menu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_EXCBREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Exceptions...");
+        DebugR4300Menu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_STACKVIEW, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Stack...");
+        DebugR4300Menu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_STACKTRACE, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Stack Trace...");
+        DebugR4300Menu.push_back(Item);
+
         Item.Reset(ID_DEBUG_DISABLE_GAMEFIX, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Disable Game Fixes");
         if (g_Settings->LoadBool(Debugger_DisableGameFixes))
         {
@@ -1050,9 +1074,13 @@ void CMainMenu::FillOutMenu(HMENU hMenu)
         DebugMemoryMenu.push_back(Item);
         Item.Reset(ID_DEBUGGER_SEARCHMEMORY, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Search...");
         DebugMemoryMenu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_SYMBOLS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Symbols...");
+        DebugMemoryMenu.push_back(Item);
         Item.Reset(ID_DEBUGGER_DUMPMEMORY, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Dump...");
         DebugMemoryMenu.push_back(Item);
         Item.Reset(ID_DEBUGGER_TLBENTRIES, EMPTY_STRING, EMPTY_STDSTR, NULL, L"TLB Entries...");
+        DebugMemoryMenu.push_back(Item);
+        Item.Reset(ID_DEBUGGER_DMALOG, EMPTY_STRING, EMPTY_STDSTR, NULL, L"DMA Log...");
         DebugMemoryMenu.push_back(Item);
 
         /* Debug - App logging
@@ -1146,51 +1174,24 @@ void CMainMenu::FillOutMenu(HMENU hMenu)
 
         /* Debugger Main Menu
         ****************/
-        Item.Reset(ID_DEBUGGER_BREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Breakpoint...");
-        //Item.SetItemEnabled(CPURunning);
+        Item.Reset(ID_DEBUGGER_BREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Commands...");
         DebugMenu.push_back(Item);
-
-        /* Debug - Exception breakpoints
-        *******************/
-        Item.Reset(ID_DEBUGGER_EXCBREAKPOINTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"CPU Exception Breakpoints...");
-        //Item.SetItemEnabled(CPURunning);
+        Item.Reset(ID_DEBUGGER_MEMORY, EMPTY_STRING, EMPTY_STDSTR, NULL, L"View Memory...");
         DebugMenu.push_back(Item);
-
-        /* Debugger - Symbols
-        ****************/
-        Item.Reset(ID_DEBUGGER_SYMBOLS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Symbols...");
-        //Item.SetItemEnabled(CPURunning);
-        DebugMenu.push_back(Item);
-
-        /* Debug - Scripts
-        *******************/
         Item.Reset(ID_DEBUGGER_SCRIPTS, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Scripts...");
-        //Item.SetItemEnabled(CPURunning);
-        DebugMenu.push_back(Item);
-
-        /* Debug - DMA Log
-        *******************/
-        Item.Reset(ID_DEBUGGER_DMALOG, EMPTY_STRING, EMPTY_STDSTR, NULL, L"DMA Log...");
-        //Item.SetItemEnabled(CPURunning);
-        DebugMenu.push_back(Item);
-
-        /* Debug - CPU Log
-        *******************/
-        Item.Reset(ID_DEBUGGER_CPULOG, EMPTY_STRING, EMPTY_STDSTR, NULL, L"CPU Log...");
-        //Item.SetItemEnabled(CPURunning);
-        DebugMenu.push_back(Item);
-
-        /* Debug - Stack
-        *******************/
-        Item.Reset(ID_DEBUGGER_STACKVIEW, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Stack...");
-        DebugMenu.push_back(Item);
-
-        /* Debug - Stack Trace
-        *******************/
-        Item.Reset(ID_DEBUGGER_STACKTRACE, EMPTY_STRING, EMPTY_STDSTR, NULL, L"Stack Trace...");
         DebugMenu.push_back(Item);
 
         DebugMenu.push_back(MENU_ITEM(SPLITER));
+
+        /* Debug - Memory
+        *******************/
+        Item.Reset(SUB_MENU, EMPTY_STRING, EMPTY_STDSTR, &DebugMemoryMenu, L"Memory");
+        DebugMenu.push_back(Item);
+
+        /* Debug - R4300i
+        *******************/
+        Item.Reset(SUB_MENU, EMPTY_STRING, EMPTY_STDSTR, &DebugR4300Menu, L"&R4300i");
+        DebugMenu.push_back(Item);
 
         /* Debug - RSP
         *******************/
@@ -1229,11 +1230,6 @@ void CMainMenu::FillOutMenu(HMENU hMenu)
         }
         DebugNotificationMenu.push_back(Item);
 
-        Item.Reset(SUB_MENU, EMPTY_STRING, EMPTY_STDSTR, &DebugR4300Menu, L"&R4300i");
-        DebugMenu.push_back(Item);
-        Item.Reset(SUB_MENU, EMPTY_STRING, EMPTY_STDSTR, &DebugMemoryMenu, L"Memory");
-        Item.SetItemEnabled(CPURunning);
-        DebugMenu.push_back(Item);
         DebugMenu.push_back(MENU_ITEM(SPLITER));
         Item.Reset(SUB_MENU, EMPTY_STRING, EMPTY_STDSTR, &DebugProfileMenu, L"Profile");
         DebugMenu.push_back(Item);

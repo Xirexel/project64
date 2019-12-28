@@ -12,6 +12,7 @@
 #include <Project64-core/Debugger.h>
 #include <Common/SyncEvent.h>
 #include <Project64-core/Settings/DebugSettings.h>
+#include "DebugMMU.h"
 
 class CDumpMemory;
 class CDebugMemoryView;
@@ -28,12 +29,14 @@ class CDebugExcBreakpoints;
 
 class CCPULog;
 class CDMALog;
+class CSymbolTable;
 class CBreakpoints;
 class CScriptSystem;
 
 class CDebuggerUI :
     public CDebugger,
-    public CDebugSettings
+    public CDebugSettings,
+    public CDebugMMU
 {
 public:
     CDebuggerUI();
@@ -82,14 +85,12 @@ public:
     CDebugScripts* ScriptConsole();
     CDMALog* DMALog();
     CCPULog* CPULog();
+    CSymbolTable* SymbolTable();
 
     static void GameReset(CDebuggerUI * _this);
     static void GameCpuRunningChanged(CDebuggerUI * _this);
     static void GameNameChanged(CDebuggerUI * _this);
     static void SteppingOpsChanged(CDebuggerUI * _this);
-
-    bool DebugLW_PAddr(uint32_t vaddr, uint32_t& value);
-    bool DebugLW_VAddr(uint32_t vaddr, uint32_t& value);
 
 protected:
     void TLBChanged(void);
@@ -102,7 +103,6 @@ private:
     CDebuggerUI(const CDebuggerUI&);                // Disable copy constructor
     CDebuggerUI& operator=(const CDebuggerUI&);        // Disable assignment
 
-	CRITICAL_SECTION       m_CriticalSection;
     CDumpMemory          * m_MemoryDump;
     CDebugMemoryView     * m_MemoryView;
     CDebugMemorySearch   * m_MemorySearch;
@@ -118,6 +118,7 @@ private:
 
     CBreakpoints        * m_Breakpoints;
     CScriptSystem       * m_ScriptSystem;
+    CSymbolTable        * m_SymbolTable;
     CDMALog             * m_DMALog;
     CCPULog             * m_CPULog;
 

@@ -81,6 +81,7 @@
 #define IDD_Enhancement_GS              205
 #define IDD_Debugger_ExceptionBP        207
 #define IDD_Debugger_Search_SetValue    210
+#define IDD_Settings_DiskDrive          215
 #define IDC_MENU_ITEM_TEXT              1000
 #define IDC_CLOSE_BUTTON                1001
 #define IDC_LIST2                       1003
@@ -90,10 +91,8 @@
 #define RSP_ABOUT                       1006
 #define IDC_ASSIGN                      1006
 #define IDC_BTN_CHOOSE_FILE             1006
-#define IDC_DUMP_MEM                    1006
 #define IDC_INFO_FILENAME               1007
 #define IDC_BTN_RDRAM                   1007
-#define IDC_REFRSH_MEM                  1007
 #define IDC_INFO_ROMNAME                1008
 #define IDC_RESET_PAGE                  1008
 #define IDC_INFO_CARTID                 1009
@@ -193,7 +192,6 @@
 #define IDC_DIRECT_READ                 1057
 #define IDC_DMA_READ                    1058
 #define IDC_CONT_PAK                    1059
-#define IDC_SEARCH_MEM                  1059
 #define IDC_BTN_ROM                     1061
 #define IDC_TEXTURE_OTHER               1062
 #define IDC_TEXTURE_DIR                 1063
@@ -201,7 +199,6 @@
 #define IDC_TEXTURE_DEFAULT             1064
 #define IDC_LST_RESULTS                 1064
 #define IDC_SELECT_TEXTURE_DIR          1065
-#define IDC_MEM_DETAILS                 1065
 #define IDC_PLUGIN_OTHER                1066
 #define IDC_PLUGIN_DIR                  1067
 #define IDC_PLUGIN_DEFAULT              1068
@@ -351,6 +348,7 @@
 #define IDC_RDB                         1158
 #define IDC_UNALIGNED_DMA               1158
 #define IDC_RDB_AUTHOR                  1159
+#define IDC_RANDOMIZE_SIPI_INTERRUPTS   1159
 #define IDC_RDB_VERSION                 1160
 #define IDC_RDB_DATE                    1161
 #define IDC_CHT                         1162
@@ -506,9 +504,7 @@
 #define IDC_COP0_17_EDIT                1332
 #define IDC_COP0_18_EDIT                1333
 #define IDC_FILTER_STATIC               1339
-#define IDC_SYM_INFO                    1348
 #define IDC_BLOCK_INFO                  1350
-#define IDC_DMA_INFO                    1351
 #define IDC_BACK_BTN                    1352
 #define IDC_FORWARD_BTN                 1353
 #define IDC_PC_EDIT                     1354
@@ -602,7 +598,6 @@
 #define IDC_DD44_EDIT                   1443
 #define IDC_DD48_EDIT                   1444
 #define IDC_ROM_FIXEDAUDIO              1445
-#define IDC_CHK_AUTOREFRESH             1446
 #define IDC_SHOW_FILE_EXTENSIONS        1447
 #define IDC_ENHANCEMENTLIST             1450
 #define IDC_OVERCLOCK                   1451
@@ -685,6 +680,41 @@
 #define IDC_CHK_UNSIGNED                1535
 #define IDC_CHK_IGNORECASE              1536
 #define IDC_CHK_UNKENCODING             1537
+#define IDC_IPLDIR_JP_TXT               1538
+#define IDC_IPL_JP_DIR                  1539
+#define IDC_SELECT_IPL_JP_DIR           1540
+#define IDC_IPL_US_DIR                  1541
+#define IDC_SELECT_IPL_US_DIR           1542
+#define IDC_IPLDIR_US_TXT               1543
+#define IDC_IPL_TL_DIR                  1544
+#define IDC_SELECT_IPL_TL_DIR           1545
+#define IDC_IPLDIR_TL_TXT               1546
+#define IDC_DISKSAVETYPE_TXT            1547
+#define IDC_DISKSAVETYPE                1548
+#define IDC_CHK_INTR_SP                 1549
+#define IDC_CHK_INTR_SI                 1550
+#define IDC_CHK_INTR_AI                 1551
+#define IDC_CHK_INTR_VI                 1552
+#define IDC_CHK_INTR_PI                 1553
+#define IDC_CHK_INTR_DP                 1554
+#define IDC_CHK_INTR_IP0                1555
+#define IDC_CHK_INTR_IP1                1556
+#define IDC_CHK_INTR_IP2                1557
+#define IDC_CHK_INTR_IP3                1558
+#define IDC_CHK_INTR_IP4                1559
+#define IDC_CHK_INTR_IP5                1560
+#define IDC_CHK_INTR_IP6                1561
+#define IDC_CHK_INTR_IP7                1562
+#define IDC_CHK_FP_CE                   1563
+#define IDC_CHK_FP_CV                   1564
+#define IDC_CHK_FP_CZ                   1565
+#define IDC_CHK_FP_CO                   1566
+#define IDC_CHK_FP_CU                   1567
+#define IDC_CHK_FP_CI                   1568
+#define IDC_HEXEDIT                     1569
+#define IDC_MEMTABS                     1571
+#define IDC_STATUSBAR                   1572
+#define IDC_CMB_JUMP                    1573
 #define ID_POPUPMENU_PLAYGAMEWITHDISK   40008
 #define ID_POPUPMENU_ADDSYMBOL          40013
 #define ID_POPUPMENU_VIEWDISASM         40017
@@ -724,6 +754,21 @@
 #define ID_RESULTS_ADDALLTOWATCHLIST    40080
 #define ID_WATCHLIST_CHANGE_ADDRESS     40082
 #define ID_WATCHLIST_CHANGE_ADDRESSBY   40084
+#define ID_POPUPMENU_PASTE              40092
+#define ID_POPUPMENU_COPY               40093
+#define ID_POPUPMENU_FOLLOWPOINTER      40095
+#define ID_POPUPMENU_ZEROFILL           40097
+#define ID_POPUPMENU_BYTEGROUPSIZE_1    40103
+#define ID_POPUPMENU_BYTEGROUPSIZE_2    40104
+#define ID_POPUPMENU_BYTEGROUPSIZE_4    40105
+#define ID_POPUPMENU_BYTEGROUPSIZE_8    40106
+#define ID_POPUPMENU_SAFEMODE           40107
+#define ID_POPUPMENU_DUMP               40108
+#define ID_POPUPMENU_SEARCH             40109
+#define ID_POPUPMENU_JUMPHERE           40113
+#define ID_POPUPMENU_COPYGAMESHARKCODE  40118
+#define ID_POPUPMENU_COPYDATAWITHROWADDRESSES 40119
+#define ID_POPUPMENU_COPYDATAWITHGROUPADDRESSES 40120
 #define ID_POPUPMENU_ROMDIRECTORY       40137
 #define ID_POPUPMENU_REFRESHROMLIST     40138
 #define ID_POPUPMENU_PLAYGAME           40152
@@ -740,9 +785,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        213
-#define _APS_NEXT_COMMAND_VALUE         40085
-#define _APS_NEXT_CONTROL_VALUE         1538
+#define _APS_NEXT_RESOURCE_VALUE        219
+#define _APS_NEXT_COMMAND_VALUE         40121
+#define _APS_NEXT_CONTROL_VALUE         1574
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

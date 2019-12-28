@@ -90,6 +90,7 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
     AddHandler(Cmd_BaseDirectory, new CSettingTypeTempString(BaseDirectory));
     AddHandler(Cmd_ShowHelp, new CSettingTypeTempBool(false));
     AddHandler(Cmd_RomFile, new CSettingTypeTempString(""));
+    AddHandler(Cmd_ComboDiskFile, new CSettingTypeTempString(""));
 
     //Support Files
     AddHandler(SupportFile_Settings, new CSettingTypeApplicationPath("Settings", "ConfigFile", SupportFile_SettingsDefault));
@@ -137,6 +138,7 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
     AddHandler(Setting_LanguageDirDefault, new CSettingTypeRelativePath("Lang", ""));
     AddHandler(Setting_LanguageDir, new CSettingTypeApplicationPath("Lang Directory", "Directory", Setting_LanguageDirDefault));
 	AddHandler(Setting_SyncViaAudioEnabled, new CSettingTypeTempBool(false, "SyncViaAudioEnabled"));
+    AddHandler(Setting_DiskSaveType, new CSettingTypeApplication("Settings", "Disk Save Type", (uint32_t)1));
 
 	AddHandler(Default_RDRamSize, new CSettingTypeApplication("Defaults", "RDRAM Size", 0x400000u));
 	AddHandler(Default_UseHleGfx, new CSettingTypeApplication("Defaults", "HLE GFX Default", true));
@@ -147,7 +149,8 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
 	AddHandler(Default_32Bit, new CSettingTypeApplication("Defaults", "32bit", true));
 	AddHandler(Default_SyncViaAudio, new CSettingTypeApplication("Defaults", "Audio-Sync Audio", true));
 	AddHandler(Default_FixedAudio, new CSettingTypeApplication("Defaults", "Fixed Audio", true));
-    AddHandler(Default_UnalignedDMA, new CSettingTypeApplication("Defaults", "Unaligned DMA", false));
+	AddHandler(Default_UnalignedDMA, new CSettingTypeApplication("Defaults", "Unaligned DMA", false));
+	AddHandler(Default_RandomizeSIPIInterrupts, new CSettingTypeApplication("Defaults", "Randomize SI/PI Interrupts", true));
 
     AddHandler(Rdb_GoodName, new CSettingTypeRomDatabase("Good Name", Game_GameName));
     AddHandler(Rdb_SaveChip, new CSettingTypeRDBSaveChip("Save Type", (uint32_t)SaveChip_Auto));
@@ -194,6 +197,7 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
     AddHandler(Rdb_AllowROMWrites, new CSettingTypeRDBYesNo("AllowROMWrites", false));
     AddHandler(Rdb_CRC_Recalc, new CSettingTypeRDBYesNo("CRC-Recalc", false));
     AddHandler(Rdb_UnalignedDMA, new CSettingTypeRomDatabase("Unaligned DMA", Default_UnalignedDMA));
+    AddHandler(Rdb_RandomizeSIPIInterrupts, new CSettingTypeRomDatabase("Randomize SI/PI Interrupts", Default_RandomizeSIPIInterrupts));
 
     AddHandler(Game_IniKey, new CSettingTypeTempString(""));
     AddHandler(Game_File, new CSettingTypeTempString(""));
@@ -253,6 +257,7 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
     AddHandler(Game_OverClockModifier, new CSettingTypeGame("OverClockModifier", (uint32_t)1));
     AddHandler(Game_FullSpeed, new CSettingTypeTempBool(true, "Full Speed"));
     AddHandler(Game_UnalignedDMA, new CSettingTypeGame("Unaligned DMA", Rdb_UnalignedDMA));
+    AddHandler(Game_RandomizeSIPIInterrupts, new CSettingTypeGame("Randomize SI/PI Interrupts", Rdb_RandomizeSIPIInterrupts));
 
     //User Interface
     AddHandler(UserInterface_ShowCPUPer, new CSettingTypeApplication("Settings", "Display CPU Usage", (uint32_t)false));
@@ -328,6 +333,8 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
 
     AddHandler(UserInterface_BasicMode, new CSettingTypeApplication("Settings", "Basic Mode", (uint32_t)true));
     AddHandler(File_DiskIPLPath, new CSettingTypeApplicationPath("Settings", "Disk IPL ROM Path", Default_None));
+    AddHandler(File_DiskIPLUSAPath, new CSettingTypeApplicationPath("Settings", "Disk IPL USA ROM Path", Default_None));
+    AddHandler(File_DiskIPLTOOLPath, new CSettingTypeApplicationPath("Settings", "Disk IPL TOOL ROM Path", Default_None));
 
     AddHandler(Debugger_Enabled, new CSettingTypeApplication("Debugger", "Debugger", false));
     AddHandler(Debugger_ShowTLBMisses, new CSettingTypeApplication("Debugger", "Show TLB Misses", false));
@@ -343,10 +350,12 @@ void CSettings::AddHowToHandleSetting(const char * BaseDirectory)
     AddHandler(Debugger_WriteBPExists, new CSettingTypeTempBool(false));
     AddHandler(Debugger_ReadBPExists, new CSettingTypeTempBool(false));
     AddHandler(Debugger_WaitingForStep, new CSettingTypeTempBool(false));
-    AddHandler(Debugger_AutoRefreshMemoryView, new CSettingTypeApplication("Debugger", "Auto Refresh Memory View", true));
     AddHandler(Debugger_CPULoggingEnabled, new CSettingTypeApplication("Debugger", "Enable CPU Logging", false));
     AddHandler(Debugger_CPULogBufferSize, new CSettingTypeApplication("Debugger", "CPU Log Buffer Size", (uint32_t)1024));
     AddHandler(Debugger_ExceptionBreakpoints, new CSettingTypeApplication("Debugger", "Exception Breakpoints", (uint32_t)0));
+    AddHandler(Debugger_FpExceptionBreakpoints, new CSettingTypeApplication("Debugger", "FP Exception Breakpoints", (uint32_t)0));
+    AddHandler(Debugger_IntrBreakpoints, new CSettingTypeApplication("Debugger", "Interrupt Breakpoints", (uint32_t)0));
+    AddHandler(Debugger_RcpIntrBreakpoints, new CSettingTypeApplication("Debugger", "RCP Interrupt Breakpoints", (uint32_t)0));
     AddHandler(Debugger_DebugLanguage, new CSettingTypeApplication("Debugger", "Debug Language", false));
     AddHandler(Debugger_ShowDivByZero, new CSettingTypeApplication("Debugger", "Show Div by zero", false));
     AddHandler(Debugger_AppLogFlush, new CSettingTypeApplication("Logging", "Log Auto Flush", (uint32_t)false));
